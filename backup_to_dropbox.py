@@ -4,6 +4,7 @@ import dropbox
 import re
 from tqdm import tqdm
 import subprocess
+import shutil
 
 class utils:
     @staticmethod
@@ -57,11 +58,11 @@ def upload_folder_to_dropbox(backup_folder, dropbox_destination_path, access_tok
         commit = dropbox.files.CommitInfo(path=f'{dropbox_destination_path}/{os.path.basename(chunk_name)}', mode=dropbox.files.WriteMode('add', None), autorename=True)
         dbx.files_upload_session_finish(chunk_data, cursor, commit)
 
-        # delete the chunk file from local disk
-        os.remove(chunk_name)
+        # # delete the chunk file from local disk
+        # os.remove(chunk_name)
     
-    # remove the split folder
-    os.rmdir(split_tar_files_path)
+    # # remove the split folder
+    # os.rmdir(split_tar_files_path)
     print(f'Upload of tar file chunks to Dropbox completed.')
 
     
@@ -99,6 +100,7 @@ def download_folder_from_dropbox(dropbox_folder_path, local_destination_path, ac
         if isinstance(entry, dropbox.files.FileMetadata):
             chunk_names.append(entry.name)
     chunk_names = utils.natural_sort(chunk_names)
+    print(chunk_names)
     
     # Download the tar file chunks
     for chunk_name in chunk_names:
@@ -109,17 +111,19 @@ def download_folder_from_dropbox(dropbox_folder_path, local_destination_path, ac
             print(f"{chunk_name} downloaded to {local_destination_path}")
     
     # Combine the tar file chunks into a single tar file
-    
-    
-    # # Extract the tar file
-    # print(f'Extracting {tar_file_path}...')
-    # with tarfile.open(tar_file_path, 'r:gz') as tar:
-    #     tar.extractall(local_destination_path)
-    # print(f'Tar file {tar_file_path} extracted.')
+    output_file_path = os.path.join(local_destination_path, 'backup.tar.gz.joined')
+    cmd = f"cat {os.path.join(local_destination_path, 'random_data.tar.gz-parta*')} >{output_file_path}"
+    subprocess.run(cmd, shell=True, check=True)
+            
+    # Extract the tar file
+    print(f'Extracting {output_file_path}...')
+    with tarfile.open(output_file_path, 'r:gz') as tar:
+        tar.extractall(local_destination_path)
+    print(f'Tar file {output_file_path} extracted.')
 
-    # # Delete the tar file
-    # os.remove(tar_file_path)
-    # print(f'Tar file {tar_file_path} deleted.')
+    # Delete the tar file
+    os.remove(output_file_path)
+    print(f'Tar file {output_file_path} deleted.')
 
   
 

@@ -4,6 +4,7 @@ This script allows you to upload a folder to Dropbox and download it back to you
 
 Folders can be arbitrarily large. 
 ## Getting Started
+NOTE: Downloader is buggy right now. Dropbox may be messing with the split tar files. Upon concat post-downloading the combined tar file becomes corrupt.
 
 #### Prerequisites
 To use this script, you will need:
