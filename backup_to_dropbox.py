@@ -108,7 +108,7 @@ def download_folder_from_dropbox(dropbox_folder_path, local_destination_path, ac
             f.write(res.content)
             print(f"{chunk_name} downloaded to {local_destination_path}")
     
-    # # Combine the tar file chunks into a single tar file
+    # Combine the tar file chunks into a single tar file
     
     
     # # Extract the tar file
